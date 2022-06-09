@@ -1,6 +1,6 @@
 # Flechenpost Interview
 
-## STORY CONSICE
+## STORY CONSICE - (My interpretation)
 
 ---
 
@@ -19,93 +19,18 @@ Below mentioned diagram depicts the flow of data and the architecture for our ap
 
 ![Untitled](Flechenpost%20Interview%20b4e4d8d8419c438885c8d82907950557/Untitled.png)
 
-As shown in the Diagram, the whole of backend stack are hosted within our Private VPC while the Load balancer would be a public Load balancer which would be connected to our Gateway Ingress Controller.
+As shown in the Diagram, the whole of backend stack are hosted within our Private Vnet while the Load balancer would be a public Load balancer which would be connected to our Gateway Ingress Controller.
 
-For scaling purposes, we would be considering the following aspects:
+Answers to the questions requested are listed in the below pages: 
 
-1. Backend scaling if a a Queue Consumer:
-    - Number of Messages in the Queue
-    - Total CPU usage.
-    - Total Memory Usage.
+[Q1: Scaling Triggers](Flechenpost%20Interview%20b4e4d8d8419c438885c8d82907950557/Q1%20Scaling%20Triggers%20a6aa38b2c3954912b762e9ec2d862376.md)
 
- 2. Backend scaling if a Database Client:
+[Q2: CI/CD Pipeline](Flechenpost%20Interview%20b4e4d8d8419c438885c8d82907950557/Q2%20CI%20CD%20Pipeline%20962bdcdac74a495c91fcc88ca187e236.md)
 
-- Total load acceptable by the Database
-    - Number of connections accepted by the database
-    - Total CPU load the database can withstand.
-    - Total Memory the database can withstand.
-    - Disk IOPS capacity of the database.
-1. Backend Scaling if a Queue producer. 
-    - Weather the Queuing system is in clustered mode and can be scaled horizontally.
-    - Before scaling this backend producer, we would first scale the Queue application.
-    - CPU and memory Load is to be considered as well while scaling this.
-2. Backend if it is a Redis Client:
-    - Wheather Redis is deployed as HA service or a clustered
+[Q3: Program to Analyze log file](Flechenpost%20Interview%20b4e4d8d8419c438885c8d82907950557/Q3%20Program%20to%20Analyze%20log%20file%20ce11bbf22f3e47de8ac782eb7f989b8a.md)
 
-## CI/CD Pipeline for building and deploying backend application to AKS
+[Q4: log aggregation](Flechenpost%20Interview%20b4e4d8d8419c438885c8d82907950557/Q4%20log%20aggregation%20e8630df4f3bf4e069860418139f17285.md)
 
-Assumptions:
+[Q5: Automation to create user and SSH access](Flechenpost%20Interview%20b4e4d8d8419c438885c8d82907950557/Q5%20Automation%20to%20create%20user%20and%20SSH%20access%20156cfe2ff660490889c41fdd56d3dc6c.md)
 
-- Backend application is of a DotnetCore stack.
-- Use ACR as a container registry
-- Use Azure DevOps for Board/Repo/pipelines
-
-Flow:
-
-1. Requirement gathering and sprint planning are listed in Azure boards as Workitems and assigned to individual developers. 
-2. Setup a ‘ AzureGit Repo’  with master/main branch locked as the fist best practice. This is intended to enable developers to use other branches and raise Pull Request to master branch once they are ready. 
-    
-    ![Untitled](Flechenpost%20Interview%20b4e4d8d8419c438885c8d82907950557/Untitled%201.png)
-    
-3. Enforce Workitem association for any PR submission
-4. Add policy to trigger a PR build based on PR submission to master branch. 
-    
-    ![Untitled](Flechenpost%20Interview%20b4e4d8d8419c438885c8d82907950557/Untitled%202.png)
-    
-5. PR-Pipeline details are as follows:
-    1. Build project
-    2. Run unit and functional testing
-    3. Code scan using Sonarqube/Cloud for detecting code smell, code coverage, adhere quality gates
-    4. Scan for vulnerabilities and licensing issues with Whiteboult scan
-    
-    ![PR Pipeline definition ](Flechenpost%20Interview%20b4e4d8d8419c438885c8d82907950557/Untitled%203.png)
-    
-    PR Pipeline definition 
-    
-
-![PR pipeline run](Flechenpost%20Interview%20b4e4d8d8419c438885c8d82907950557/Untitled%204.png)
-
-PR pipeline run
-
-Once the PR is approved, The code will be merged with Master branch. Build pipeline (CI) is configured to be triggered when there is a commit to master branch. Indivudual tasks of this pipeline is as follows
-
-1. Docker Build Image: Using the docker file which includes dotnetbuild as part of the intermediate step will be run
-2. Created image is scanned against an Open source scanner for vulnerabilities. In this case I have used ‘Trivia’. Based on the scan results, build will wither fail or succeed to the last step
-3. Newly built image is pushed to ACR with the tag latest. 
-
-![Untitled](Flechenpost%20Interview%20b4e4d8d8419c438885c8d82907950557/Untitled%205.png)
-
-### Release Pipeline
-
-Now the Image is ready to be deployed, we will look at the deployment to the existing AKS cluster. 
-
-AKS cluster info: 
-
-AKS cluster has different namespaces for different stages. 
-
-- Dev
-- QA
-- Staging
-- Prod
-
-These stages corresponds to the Azure pipeline stages with the same name. Service connection for AKS namespaces have been created. 
-
-![Untitled](Flechenpost%20Interview%20b4e4d8d8419c438885c8d82907950557/Untitled%206.png)
-
-![Untitled](Flechenpost%20Interview%20b4e4d8d8419c438885c8d82907950557/Untitled%207.png)
-
-Trigger for this pipeline is configured to have from the build pipeline created earlier. Each stage points to individual namespaces in AKS. 
-
-Manifest file for AKS is listed as part of the application repo itself. 
-
-![Untitled](Flechenpost%20Interview%20b4e4d8d8419c438885c8d82907950557/Untitled%208.png)
+[Q6: AKS Deployment](Flechenpost%20Interview%20b4e4d8d8419c438885c8d82907950557/Q6%20AKS%20Deployment%20744f200228aa49a9b444d4b4d17a8e61.md)
