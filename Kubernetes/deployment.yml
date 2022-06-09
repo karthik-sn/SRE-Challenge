@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shopbe-deployment
+  labels:
+    app: shopbe
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: shopbe
+  template:
+    metadata:
+      labels:
+        app: shopbe
+    spec:
+      containers:
+      - name: shopbe
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "800m"
+        image: hub.example.com/shop-backend:1.0.e
+        ports:
+        - containerPort: 5000
+        livenessProbe:
+          httpGet:
+            path: /hc
+            port: 5000
+          initialDelaySeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 1
+          failureThreshold: 2
