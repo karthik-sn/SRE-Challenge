@@ -1,0 +1,28 @@
+-
+  name: UserSSH-Access
+  hosts: Clients
+  tasks:
+  - name: Remove user SSH access
+    authorized_key:
+      user: "{{ username }}"
+      state: absent
+      key: "{{ lookup('file', '{{ playbook_dir }}/keys/rsa_id.pub') }}"
+    when: proposedAction  == "revoke"
+  - user:
+      name: "{{ username }}"
+      comment: "{{ username }} removed"
+      shell: /bin/bash
+      state: absent
+    when: proposedAction  == "revoke"
+  - user:
+      name: "{{ username }}"
+      comment: "{{ username }} added"
+      shell: /bin/bash
+      state: present
+    when: proposedAction  == "grant"
+  - name: Grant user SSH access
+    authorized_key:
+      user: "{{ username }}"
+      state: present
+      key: "{{ lookup('file', '{{ playbook_dir }}/keys/rsa_id.pub') }}"
+    when: proposedAction  == "grant"
